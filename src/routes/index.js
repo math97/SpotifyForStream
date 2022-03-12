@@ -1,10 +1,8 @@
 const { Router }= require("express");
+const {authorizationRoutes} = require("./authorization");
 
 const routes = new Router();
 
-routes.get("/",(req,res)=>{
-  console.log('teste');
-  res.send("hello world")
-})
+routes.use('/authorization',authorizationRoutes)
 
 module.exports = {routes};
