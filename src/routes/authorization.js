@@ -1,6 +1,6 @@
-const axios = require("axios");
 const { Router } = require("express");
 const authConfig = require('../config/auth');
+const { getTokenService } = require('../services/getTokenService')
 
 const authorizationRoutes = new Router();
 
@@ -30,32 +30,5 @@ authorizationRoutes.get('/token',async (request,response)=>{
     console.log("\nerror:",error);
   }  
 })
-
-
-const getTokenService = async ({authorizedCode,redirectUri}) =>{
-  const {clientId,clientSecret,urlToken} = authConfig;
-    
-  const axiosInstance = generateAxiosInstance({urlToken,clientId,clientSecret});
-
-  const body=`code=${authorizedCode}&redirect_uri=${redirectUri}&grant_type=authorization_code`;
-  const authorizationTokens = await axiosInstance.post(authConfig.urlToken,body);
-
-  const { access_token,token_type,scope,expires_in,refresh_token } = authorizationTokens.data;
-
-  return {access_token,token_type,scope,expires_in, refresh_token}
-}
-
-const generateAxiosInstance =  ({urlToken,clientId,clientSecret}) => {
-  const instance= axios.create({
-    baseURL: urlToken,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization:'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
-    },
-    timeout: 60 * 1000,
-  });
-
-  return instance;
-};
 
 module.exports = {authorizationRoutes};
